@@ -1,0 +1,3 @@
+([('YonScreenshotTool',
+   '/Users/yonatanshani/PycharmProjects/PythonProject1/dist/YonScreenshotTool',
+   'EXECUTABLE')],)
