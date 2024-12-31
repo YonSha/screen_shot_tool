@@ -1,3 +1,3 @@
 # screen_shot_tool
 
-pyinstaller --onefile main.py    - TO GENERATE A EXE/SH
+pyinstaller --onefile --noconsole YonScreenshotTool.py    - TO GENERATE A EXE/SH
