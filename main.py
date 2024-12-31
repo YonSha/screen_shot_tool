@@ -1,3 +1,4 @@
+import math
 import os
 import random
 
@@ -164,19 +165,27 @@ class ScreenshotTool(QWidget):
         scale_x = self.original_image.width() / self.scaled_image.width()
         scale_y = self.original_image.height() / self.scaled_image.height()
 
+        # Convert points from scaled to original image coordinates
         start_orig = QPoint(int(start.x() * scale_x), int(start.y() * scale_y))
         end_orig = QPoint(int(end.x() * scale_x), int(end.y() * scale_y))
 
         painter = QPainter(self.original_image)
         painter.setRenderHint(QPainter.Antialiasing)
+
         pen = QPen(Qt.red, 4, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
         painter.setPen(pen)
         painter.drawLine(start_orig, end_orig)
 
-        # Draw arrowhead
+        # Calculate the arrowhead's direction based on the line's angle
         arrow_size = 10
-        p1 = end_orig + QPoint(-arrow_size, arrow_size)
-        p2 = end_orig + QPoint(arrow_size, arrow_size)
+        angle = math.atan2(end_orig.y() - start_orig.y(), end_orig.x() - start_orig.x())
+
+        # Calculate coordinates for the arrowhead lines using integers
+        p1 = end_orig - QPoint(int(arrow_size * math.cos(angle - math.pi / 6)),
+                               int(arrow_size * math.sin(angle - math.pi / 6)))
+        p2 = end_orig - QPoint(int(arrow_size * math.cos(angle + math.pi / 6)),
+                               int(arrow_size * math.sin(angle + math.pi / 6)))
+
         painter.drawLine(end_orig, p1)
         painter.drawLine(end_orig, p2)
         painter.end()
@@ -184,6 +193,9 @@ class ScreenshotTool(QWidget):
         self.display_image()
 
     def save_full_image(self):
+        # Uncheck arrow btn
+        self.arrow_button.setChecked(not self.arrow_button.isChecked())
+
         """Save the full screenshot to a file in the Documents directory."""
         filename = self.generate_random_filename("full_screenshot")
         filepath = os.path.join(self.get_documents_path(), filename)
@@ -193,6 +205,9 @@ class ScreenshotTool(QWidget):
             print(f"Failed to save full screenshot to '{filepath}'")
 
     def copy_full_to_clipboard(self):
+        # Uncheck arrow btn
+        self.arrow_button.setChecked(not self.arrow_button.isChecked())
+
         """Copy the full screenshot to the clipboard."""
         if self.original_image:
             clip = QApplication.clipboard()
@@ -200,6 +215,9 @@ class ScreenshotTool(QWidget):
             print("Full screenshot copied to clipboard.")
 
     def save_cropped_area(self):
+        # Uncheck arrow btn
+        self.arrow_button.setChecked(not self.arrow_button.isChecked())
+
         """Save the cropped selection to a file in the Documents directory."""
         if self.crop_rect and self.crop_rect.isValid():
             self.rubberBand.hide()
@@ -215,6 +233,9 @@ class ScreenshotTool(QWidget):
             print("No valid crop area selected.")
 
     def copy_cropped_to_clipboard(self):
+        # Uncheck arrow btn
+        self.arrow_button.setChecked(not self.arrow_button.isChecked())
+
         """Copy the cropped selection to the clipboard."""
         if self.crop_rect and self.crop_rect.isValid():
             self.rubberBand.hide()
